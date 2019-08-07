@@ -56,6 +56,7 @@ class MTProtoSender:
         self._auth_key_callback = auth_key_callback
         self._update_callback = update_callback
         self._auto_reconnect_callback = auto_reconnect_callback
+        self._connect_lock = asyncio.Lock(loop=loop)
 
         # If there is a high-level client that created this sender, store
         # a weak reference to it (otherwise we would likely have a cycle).
@@ -123,13 +124,15 @@ class MTProtoSender:
         """
         Connects to the specified given connection using the given auth key.
         """
-        if self._user_connected:
-            self._log.info('User is already connected!')
-            return
+        async with self._connect_lock:
+            if self._user_connected:
+                self._log.info('User is already connected!')
+                return False
 
-        self._connection = connection
-        await self._connect()
-        self._user_connected = True
+            self._connection = connection
+            await self._connect()
+            self._user_connected = True
+            return True
 
     def is_connected(self):
         return self._user_connected
