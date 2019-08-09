@@ -45,7 +45,7 @@ use these if possible.
         # You can, of course, use markdown in your messages:
         message = client.send_message(
             'me',
-            'This message has **bold**, `code`, __italics__ and '
+            'This message has **bold**, `code`, __italics__ and ',
             'a [nice website](https://lonamiwebs.github.io)!',
             link_preview=False
         )
